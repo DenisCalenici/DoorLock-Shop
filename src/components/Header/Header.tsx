@@ -153,37 +153,6 @@ const Header = () => {
       <div className={`${s.mobile_menu} ${isMenuOpen ? s.open : ""}`}>
 
 
-  <div className={s.mobile_icons}>
-            <Link
-              to="/favorites"
-              aria-label="Избранное"
-              className={s.icon_link}
-              onClick={closeMenu}
-            >
-              <FaHeart size={24} />
-              {basketItems.reduce((sum, item) => sum + item.quantity, 0) >
-                0 && (
-                <span className={s.cart_count}>
-                  {basketItems.reduce((sum, item) => sum + item.quantity, 0)}
-                </span>
-              )}
-            </Link>
-            <button
-              className={s.mobile_basket_button}
-              onClick={() => {
-                setIsBasketOpen(true);
-                closeMenu();
-              }}
-              aria-label="Корзина"
-            >
-              <FaShoppingCart size={24} />
-              {basketItems.length > 0 && (
-                <span className={s.cart_count}>
-                  {basketItems.reduce((sum, item) => sum + item.quantity, 0)}
-                </span>
-              )}
-            </button>
-          </div>
 
 
 

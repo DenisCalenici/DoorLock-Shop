@@ -196,13 +196,12 @@
 
   /* Логотип сверху */
   .footer_logo {
-    width: 100%;
+    width: 80%;
     height: auto;
-    margin: 0 0 40px 0;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    min-width: 100%;
+   gap: 70px;
+    
   }
 
   .footer_logo_logo img {
@@ -423,11 +422,3 @@
     padding: 12px;
   }
 }
-/* @media (max-width: 375px) {
-  
-
- 
-  .footer_logo {
-    width: 330px;
-    
-  }} */

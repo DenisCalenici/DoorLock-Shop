@@ -1,7 +1,6 @@
 /* Main.module.css */
 
 .main_container {
-  width: 1440px;
 
   margin: 0 auto;
   font-family:
@@ -209,10 +208,7 @@
 /* Состояния загрузки и ошибок */
 .main_loading_container,
 .main_empty_container {
-  width: 1440px;
   height: 774px;
-  top: 126px;
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
