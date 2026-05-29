@@ -1,8 +1,17 @@
+@import "./styles/responsive.css";
+
 /* Минимальный CSS Reset */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+:root {
+  --color-primary: #4295e4;
+  --color-icon-muted: #6b7a8c;
+  --color-icon-heart: #e85d7a;
+  --color-icon-star: #f5b301;
 }
 
 html,

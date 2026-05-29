@@ -1,0 +1,31 @@
+.wholesale {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+  line-height: 1.6;
+}
+
+.wholesale_grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .wholesale_grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.wholesale_grid ul {
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.wholesale_grid li {
+  margin-bottom: 0.5rem;
+}
+
+.wholesale a {
+  color: var(--color-primary, #4295e4);
+}

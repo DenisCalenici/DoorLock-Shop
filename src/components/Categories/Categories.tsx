@@ -1,78 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import s from './Categories.module.css';
-
-interface CategoryItem {
-  id: number;
-  title: string;
-  image: string;
-  link: string;
-}
+import React, { useCallback } from "react";
+import { Link } from "react-router-dom";
+import s from "./Categories.module.css";
+import {
+  fetchCategories,
+  mapCategoriesToItems,
+  type CategoryItem,
+} from "../../api/products";
+import { useAsyncData } from "../../hooks/useAsyncData";
+import { AsyncStateGate } from "../common/asyncState";
 
 const Categories: React.FC = () => {
-  const [categories, setCategories] = useState<CategoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch('https://fakestoreapi.com/products/categories');
-        const data = await response.json();
-        
-        const formattedCategories = data.slice(0, 4).map((cat: string, index: number) => ({
-          id: index + 1,
-          title: cat.charAt(0).toUpperCase() + cat.slice(1),
-          image: `https://via.placeholder.com/400x225/4295E4/ffffff?text=${cat}`,
-          link: `/category/${cat}`
-        }));
-        
-        setCategories(formattedCategories);
-      } catch (error) {
-        console.error('Ошибка загрузки категорий:', error);
-        setCategories([
-          { id: 1, title: 'Электроника', image: 'https://via.placeholder.com/400x225/4295E4/ffffff?text=Electronics', link: '/category/electronics' },
-          { id: 2, title: 'Одежда', image: 'https://via.placeholder.com/400x225/4295E4/ffffff?text=Clothing', link: '/category/clothing' },
-          { id: 3, title: 'Дом и сад', image: 'https://via.placeholder.com/400x225/4295E4/ffffff?text=Home', link: '/category/home' },
-          { id: 4, title: 'Спорт', image: 'https://via.placeholder.com/400x225/4295E4/ffffff?text=Sports', link: '/category/sports' }
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
+  const loadCategories = useCallback(async () => {
+    const data = await fetchCategories();
+    return mapCategoriesToItems(data);
   }, []);
 
-  if (loading) {
-    return (
-      <div className={s.categories}>
-        <div className={s.categories_container}>
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            Загрузка категорий...
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const { data: categories, isLoading, error, reload } =
+    useAsyncData<CategoryItem[]>(loadCategories, []);
+
+  const categoryList = categories ?? [];
+
+  const wrapSection = (content: React.ReactNode) => (
+    <section className={s.categories}>
+      <div className={s.categories_container}>{content}</div>
+    </section>
+  );
 
   return (
-    <section className={s.categories}>
-      <div className={s.categories_container}>
+    <AsyncStateGate
+      isLoading={isLoading}
+      error={error}
+      loadingMessage="Загрузка категорий..."
+      onRetry={reload}
+      wrap={wrapSection}
+    >
+      <>
         <h1 className={s.categories_title}>Категории</h1>
-        
+
         <div className={s.categories_grid}>
-          {categories.map((category) => (
+          {categoryList.map((category) => (
             <div key={category.id} className={s.category_card}>
               <div className={s.category_header}>
                 <h3 className={s.category_title}>{category.title}</h3>
-                <a href={category.link} className={s.category_button}>
+                <Link to={category.link} className={s.category_button}>
                   Перейти
                   <span className={s.category_button_arrow}>→</span>
-                </a>
+                </Link>
               </div>
-              
+
               <div className={s.category_image_container}>
-                <img 
-                  src={category.image} 
+                <img
+                  src={category.image}
                   alt={category.title}
                   className={s.category_image}
                 />
@@ -80,8 +58,8 @@ const Categories: React.FC = () => {
             </div>
           ))}
         </div>
-      </div>
-    </section>
+      </>
+    </AsyncStateGate>
   );
 };
 

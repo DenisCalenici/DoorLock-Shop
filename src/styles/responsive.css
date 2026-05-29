@@ -1,0 +1,11 @@
+/* Базовые правила адаптивности */
+.layout,
+.main-content {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.main-content {
+  padding: 0 0 2rem;
+}

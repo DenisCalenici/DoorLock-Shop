@@ -1,3 +1,13 @@
+.basket_page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.basket_page h1 {
+  margin-bottom: 1.5rem;
+}
+
 .basket_overlay {
   position: fixed;
   top: 0;
@@ -15,11 +25,13 @@
   background-color: white;
   border-radius: 8px;
   max-width: 500px;
-  width: 90%;
-  max-height: 80vh;
+  width: min(90vw, 500px);
+  max-height: min(85vh, 600px);
   overflow-y: auto;
   position: relative;
   z-index: 1001;
+  margin: 1rem;
+  box-sizing: border-box;
 }
 
 .basket_header {
@@ -86,6 +98,9 @@
 }
 
 .checkout_btn {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
   background-color: #007bff;
   color: white;
   border: none;

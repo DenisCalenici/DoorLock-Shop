@@ -10,13 +10,20 @@
   margin-bottom: 20px;
 }
 
-.popular_header h1 {
+.popular_header h1,
+.popular_header h2 {
   font-size: 32px;
   font-weight: 600;
   color: #000000;
   margin: 0;
   padding: 10px 0;
   font-family: SF Pro Text;
+}
+
+.productImageLink,
+.productNameLink {
+  text-decoration: none;
+  color: inherit;
 }
 
 .popular_section {
@@ -88,8 +95,8 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   background: white;
   border: 1px solid #eaeaea;
   border-radius: 50%;
@@ -98,7 +105,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 .availability {
@@ -264,8 +271,7 @@
   border-radius: 50%;
   background: white;
   border: 1px solid #eaeaea;
-  color: #000;
-  font-size: 20px;
+  color: var(--color-primary, #4295e4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -293,36 +299,23 @@
   margin-left: 0;
 }
 
-.loadingContainer,
-.emptyContainer {
-  min-height: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: #000;
-}
-
-.loadingSpinner {
-  width: 50px;
-  height: 50px;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #4295E4;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 @media (max-width: 768px) {
+  .popular_container {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .popular_products_wrapper {
+    gap: 8px;
+  }
+
+  .scrollButton {
+    width: 36px;
+    height: 36px;
+  }
+
   .productCard {
-    width: 240px;
-    min-width: 240px;
+    width: min(240px, 75vw);
+    min-width: min(240px, 75vw);
   }
   
   .productImage {

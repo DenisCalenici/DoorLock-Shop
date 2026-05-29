@@ -2,18 +2,54 @@
   text-decoration: none;
   color: black;
   margin: 2px;
-
 }
 
 .link_layout:active {
   opacity: 0.5;
 }
+
 .li_layout {
   list-style: none;
   margin: 0 5px;
-  
 }
+
 .nav_link {
   max-width: 1245px;
   margin: 0 auto;
+  padding: 0.5rem 1rem;
+  overflow-x: auto;
+}
+
+.breadcrumb_list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.breadcrumb_sep {
+  color: #999;
+  user-select: none;
+}
+
+.breadcrumb_current {
+  color: #333;
+  font-weight: 500;
+  margin: 0 5px;
+}
+
+@media (max-width: 768px) {
+  .nav_link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav_link {
+    display: none;
+  }
 }

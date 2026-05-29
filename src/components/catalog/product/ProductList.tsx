@@ -1,6 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { LuGift } from "react-icons/lu";
 import { IProductCard } from "../../../hooks/useProductFilter";
+import StarRating from "../../common/StarRating/StarRating";
+import FavoriteButton from "../../common/FavoriteButton/FavoriteButton";
+import { formatPrice, formatPriceRounded } from "../../../utils/formatPrice";
+import iconStyles from "../../common/icons/ActionIcons.module.css";
 import s from "./ProductList.module.css";
 
 interface ProductListProps {
@@ -35,7 +40,10 @@ const ProductList: React.FC<ProductListProps> = ({
             />
           </Link>
 
-          <button className={s.favoriteButton}>♥</button>
+          <FavoriteButton
+            productId={product.id}
+            className={s.favoriteButton}
+          />
 
           <div className={s.availability}>
             <span className={s.availabilityText}>В наличии</span>
@@ -48,8 +56,13 @@ const ProductList: React.FC<ProductListProps> = ({
             SALE
           </button>
 
-          <button className={s.giftButton}>
-            <span className={s.giftIcon}>🎁</span>В подарок
+          <button type="button" className={s.giftButton}>
+            <LuGift
+              size={14}
+              strokeWidth={1.75}
+              className={iconStyles.gift_icon}
+            />
+            В подарок
           </button>
 
           <div className={s.productInfo}>
@@ -59,12 +72,7 @@ const ProductList: React.FC<ProductListProps> = ({
 
             <div className={s.reviewsBlock}>
               <div className={s.rating}>
-                <span className={s.stars}>
-                  {"★".repeat(Math.round(product.rating?.rate || 5))}
-                </span>
-                <span className={s.stars_empty}>
-                  {"☆".repeat(5 - Math.round(product.rating?.rate || 5))}
-                </span>
+                <StarRating rate={product.rating?.rate ?? 5} size={15} />
               </div>
               <span className={s.reviewsCount}>
                 {product.rating?.count || 0} отзывов
@@ -72,14 +80,17 @@ const ProductList: React.FC<ProductListProps> = ({
             </div>
 
             <div className={s.priceBlock}>
-              <span className={s.currentPrice}>{product.price} ₽</span>
+              <span className={s.currentPrice}>{formatPrice(product.price)}</span>
               {product.discount ? (
                 <span className={s.oldPrice}>
-                  {Math.round(product.price * (1 + product.discount / 100))} ₽
+                  {formatPriceRounded(
+                    product.price,
+                    1 + product.discount / 100,
+                  )}
                 </span>
               ) : (
                 <span className={s.oldPrice}>
-                  {Math.round(product.price * 1.2)} ₽
+                  {formatPriceRounded(product.price, 1.2)}
                 </span>
               )}
             </div>

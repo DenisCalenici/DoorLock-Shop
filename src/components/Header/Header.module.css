@@ -106,26 +106,47 @@
 .information_number a:hover {
   color: #4295e4;
 }
-.FaPhone {
+.header_icon {
   display: flex;
   align-items: center;
-  color: #454f5b;
+  color: var(--color-primary, #4295e4);
+  flex-shrink: 0;
 }
+
 .information_icon {
   display: flex;
   gap: 15px;
   align-items: center;
 }
+
 .icon_link {
   position: relative;
   display: flex;
   align-items: center;
-  color: #000;
-  transition: transform 0.2s;
+  color: var(--color-primary, #4295e4);
+  transition: transform 0.2s ease, color 0.2s ease;
   text-decoration: none;
 }
+
 .icon_link:hover {
-  transform: scale(1.1);
+  transform: scale(1.08);
+  color: #2c7fd4;
+}
+
+.icon_heart {
+  color: var(--color-icon-heart, #e85d7a);
+}
+
+.icon_link:hover .icon_heart {
+  fill: var(--color-icon-heart, #e85d7a);
+}
+
+.icon_cart {
+  color: var(--color-primary, #4295e4);
+}
+
+.basket_button:hover .icon_cart {
+  color: #2c7fd4;
 }
 .cart_count {
   position: absolute;
@@ -170,16 +191,16 @@
 }
 .mobile_menu {
   display: none;
+  flex-direction: column;
   position: fixed;
   top: 0;
   left: -100%;
-  width: 80%;
-  max-width: 400px;
-  height: 100vh;
+  width: min(85vw, 400px);
+  height: 100dvh;
   background: white;
   z-index: 150;
   transition: left 0.3s ease;
-  padding: 100px 20px 30px;
+  padding: 5rem 1.25rem 1.5rem;
   overflow-y: auto;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -204,8 +225,9 @@
   border-bottom: 1px solid #eaeaea;
 }
 .mobile_contacts {
-  position: fixed;
-  bottom: 0;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eaeaea;
 }
 .mobile_phone {
   display: flex;
@@ -217,16 +239,6 @@
 .mobile_phone a {
   color: #000;
   text-decoration: none;
-}
-.mobile_icons {
-gap: 10px;
-   position: fixed;
-  top: 50px; 
-  left: 200px;
-  width: 50px;
-  display: flex;
-
- 
 }
 .menu_overlay {
   display: none;
@@ -252,8 +264,13 @@ gap: 10px;
   padding: 8px;
   display: flex;
   align-items: center;
-  color: inherit;
+  color: var(--color-primary, #4295e4);
   text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.basket_button:hover {
+  transform: scale(1.08);
 }
 @media (max-width: 1024px) {
   .logo_container {
@@ -309,9 +326,6 @@ gap: 10px;
 @media (max-width: 768px) {
   .header {
     height: auto;
-  }
-  .logo_container img {
-    display: none;
   }
   .stock {
     height: 36px;
@@ -377,7 +391,7 @@ gap: 10px;
     display: none;
   }
   .mobile_menu {
-    display: block;
+    display: flex;
   }
   .menu_overlay {
     display: block;

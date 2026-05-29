@@ -1,5 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { BasketItem } from "../../types/Basket.type";
+import { formatPrice } from "../../utils/formatPrice";
 import s from "./Basket.module.css";
 
 interface BasketProps {
@@ -44,7 +46,7 @@ const Basket: React.FC<BasketProps> = ({
                   {item.image && <img src={item.image} alt={item.name} />}
                   <div>
                     <h4>{item.name}</h4>
-                    <p>{item.price} ₽</p>
+                    <p>{formatPrice(item.price)}</p>
                   </div>
                 </div>
 
@@ -67,10 +69,21 @@ const Basket: React.FC<BasketProps> = ({
         </div>
 
         <div className={s.basket_footer}>
-          <div className={s.total}>Итого: {totalPrice} ₽</div>
-          <button className={s.checkout_btn} disabled={items.length === 0}>
+          <div className={s.total}>Итого: {formatPrice(totalPrice)}</div>
+          <Link
+            to="/checkout"
+            className={s.checkout_btn}
+            onClick={onClose}
+          >
             Оформить заказ
-          </button>
+          </Link>
+          <Link
+            to="/cart"
+            className={s.checkout_btn}
+            onClick={onClose}
+          >
+            Перейти в корзину
+          </Link>
         </div>
       </div>
     </div>

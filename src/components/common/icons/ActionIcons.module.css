@@ -1,0 +1,39 @@
+.favorite_icon {
+  color: #e85d7a;
+  transition: fill 0.2s ease, transform 0.2s ease;
+}
+
+.favorite_button:hover .favorite_icon {
+  fill: #e85d7a;
+  transform: scale(1.08);
+}
+
+.favorite_active .favorite_icon {
+  fill: #e85d7a;
+}
+
+.favorite_label {
+  font-size: 15px;
+  font-weight: 500;
+  color: #454f5b;
+}
+
+.favorite_button:has(.favorite_label) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.favorite_button:has(.favorite_label):hover .favorite_label {
+  color: #e85d7a;
+}
+
+.gift_icon {
+  color: #4295e4;
+  flex-shrink: 0;
+}
+
+.search_icon {
+  color: #4295e4;
+  opacity: 0.85;
+}

@@ -1,112 +1,58 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import s from "./Main.module.css";
-import type { IProductCard } from "../../hooks/useProductFilter";
 import Numbers from "../Numbers/Numbers";
 import WhyChooseUs from "../WhyChooseUs/WhyChooseUs";
 import PopularProduct from "../common/popularProduct/PopularProduct";
 import Categories from "../Categories";
+import { useProducts } from "../../context/ProductsContext";
+import { useCartActions } from "../../hooks/useCartAction";
+import { AsyncStateGate } from "../common/asyncState";
+import type { IProductCard } from "../../hooks/useProductFilter";
+import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
+import { formatPrice, formatPriceRounded } from "../../utils/formatPrice";
 
-interface MainProps {
-  title?: string;
-  onProductClick?: (product: IProductCard) => void;
+interface MainProductShowcaseProps {
+  products: IProductCard[];
 }
 
-const Main: React.FC<MainProps> = ({
-  title = "Накладные электронные замки",
-  onProductClick,
-}) => {
-  const [products, setProducts] = useState<IProductCard[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+const MainProductShowcase = ({ products }: MainProductShowcaseProps) => {
+  const { handleAddToBasket } = useCartActions();
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    setIsLoading(true);
-    fetch("https://fakestoreapi.com/products")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Ошибка при загрузке данных: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((apiData: any[]) => {
-        const transformedData: IProductCard[] = apiData.map((item) => ({
-          ...item,
-          name: item.name || item.title || "",
-        }));
-        setProducts(transformedData);
-        setIsLoading(false);
-      })
-      .catch((err: any) => {
-        setError(err.message);
-        setIsLoading(false);
-      });
-  }, []);
+    if (currentIndex >= products.length) {
+      setCurrentIndex(0);
+    }
+  }, [products.length, currentIndex]);
 
-  const addToBasket = (product: IProductCard) => {
-    console.log("Товар добавлен в корзину:", product.title);
-  };
+  const currentProduct = products[currentIndex];
+
+  if (!currentProduct) {
+    return null;
+  }
 
   const showPrevious = () => {
     setCurrentIndex((prev) => (prev > 0 ? prev - 1 : products.length - 1));
   };
 
   const showNext = () => {
-    setCurrentIndex((prev) => (prev < products.length - 1 ? prev + 1 : 0));
+    setCurrentIndex((prev) =>
+      prev < products.length - 1 ? prev + 1 : 0,
+    );
   };
 
-  if (isLoading) {
-    return (
-      <div className={s.main_container}>
-        <div className={s.main_loading_container}>
-          <div className={s.main_loading_spinner}></div>
-          <p>Загрузка продуктов...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={s.main_container}>
-        <div className={s.main_empty_container}>
-          <h2>Ошибка загрузки</h2>
-          <p>{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className={s.main_button}
-          >
-            Попробовать снова
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!products || products.length === 0) {
-    return (
-      <div className={s.main_container}>
-        <div className={s.main_empty_container}>
-          <h2>Каталог пуст</h2>
-          <p>Товары временно отсутствуют</p>
-        </div>
-      </div>
-    );
-  }
-
-  const currentProduct = products[currentIndex];
-
   return (
-    <div className={s.main_container}>
+    <>
       <section className={s.main_section}>
         <div className={s.main_catalog_container}>
           <div className={s.productCenterWrapper}>
             <button
+              type="button"
               className={`${s.nav_button} ${s.nav_button_prev}`}
               onClick={showPrevious}
               aria-label="Предыдущий товар"
             >
-              ←
+              <LuChevronLeft size={28} strokeWidth={2} />
             </button>
 
             <div className={s.productCard}>
@@ -129,16 +75,16 @@ const Main: React.FC<MainProps> = ({
 
                 <div className={s.priceBlock}>
                   <span className={s.currentPrice}>
-                    {currentProduct.price} ₽
+                    {formatPrice(currentProduct.price)}
                   </span>
                   <span className={s.oldPrice}>
-                    {Math.round(currentProduct.price * 1.2)} ₽
+                    {formatPriceRounded(currentProduct.price, 1.2)}
                   </span>
                 </div>
 
                 <button
                   className={s.addToCartButton}
-                  onClick={() => addToBasket(currentProduct)}
+                  onClick={(e) => handleAddToBasket(e, currentProduct)}
                 >
                   Добавить в корзину
                 </button>
@@ -146,11 +92,12 @@ const Main: React.FC<MainProps> = ({
             </div>
 
             <button
+              type="button"
               className={`${s.nav_button} ${s.nav_button_next}`}
               onClick={showNext}
               aria-label="Следующий товар"
             >
-              →
+              <LuChevronRight size={28} strokeWidth={2} />
             </button>
           </div>
 
@@ -165,7 +112,33 @@ const Main: React.FC<MainProps> = ({
         <Categories />
         <PopularProduct />
       </section>
-    </div>
+    </>
+  );
+};
+
+const Main: React.FC = () => {
+  const { products, isLoading, error } = useProducts();
+
+  const wrapMain = (content: React.ReactNode) => (
+    <div className={s.main_container}>{content}</div>
+  );
+
+  const hasProducts = !isLoading && !error && products.length > 0;
+
+  return (
+    <AsyncStateGate
+      isLoading={isLoading}
+      error={error}
+      loadingMessage="Загрузка продуктов..."
+      isEmpty={!isLoading && !error && products.length === 0}
+      empty={{
+        title: "Каталог пуст",
+        message: "Товары временно отсутствуют",
+      }}
+      wrap={wrapMain}
+    >
+      {hasProducts ? <MainProductShowcase products={products} /> : null}
+    </AsyncStateGate>
   );
 };
 

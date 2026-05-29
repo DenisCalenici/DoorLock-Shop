@@ -1,52 +1,28 @@
-import { FaShoppingCart, FaHeart, FaPhone } from "react-icons/fa";
+import { LuHeart, LuPhone, LuShoppingBag } from "react-icons/lu";
 import logo from "../../../public/image/Logo.png";
 import s from "./Header.module.css";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { IProductCard } from "../catalog/product/ProductCard.type";
-import { BasketItem } from "../../types/Basket.type";
+import { useCart } from "../../context/CartContext";
 import Basket from "../Basket/Basket";
 
 const Header = () => {
-  const [isBasketOpen, setIsBasketOpen] = useState(false);
-  const [basketItems, setBasketItems] = useState<BasketItem[]>([]);
+  const {
+    basketItems,
+    getTotalItems,
+    isBasketOpen,
+    openBasket,
+    closeBasket,
+    updateQuantity,
+    removeFromCart,
+  } = useCart();
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const totalItems = getTotalItems();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
     document.body.style.overflow = !isMenuOpen ? "hidden" : "unset";
-  };
-
-  const addToBasket = (product: IProductCard) => {
-    setBasketItems((prev) => {
-      const existingItem = prev.find((item) => item.id === product.id);
-      if (existingItem) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        );
-      }
-      const newItem: BasketItem = {
-        id: product.id,
-        name: product.title,
-        price: product.price,
-        quantity: 1,
-        image: product.image,
-      };
-      return [...prev, newItem];
-    });
-    setIsBasketOpen(true);
-  };
-
-  const updateQuantity = (id: number, quantity: number) => {
-    setBasketItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity } : item)),
-    );
-  };
-
-  const removeItem = (id: number) => {
-    setBasketItems((prev) => prev.filter((item) => item.id !== id));
   };
 
   const closeMenu = () => {
@@ -54,9 +30,9 @@ const Header = () => {
     document.body.style.overflow = "unset";
   };
 
-  const openBasket = (e: React.MouseEvent) => {
+  const handleOpenBasket = (e: React.MouseEvent) => {
     e.preventDefault();
-    setIsBasketOpen(true);
+    openBasket();
   };
 
   return (
@@ -118,7 +94,7 @@ const Header = () => {
         </nav>
         <div className={s.container_information}>
           <div className={s.information_number}>
-            <FaPhone className={s.FaPhone} size={16} />
+            <LuPhone className={s.header_icon} size={18} strokeWidth={1.75} />
             <a href="tel:+79665588499">+7 (966) 55 88 499</a>
           </div>
           <div className={s.information_icon}>
@@ -127,35 +103,23 @@ const Header = () => {
               aria-label="Избранное"
               className={s.icon_link}
             >
-              <FaHeart size={20} />
-              {basketItems.reduce((sum, item) => sum + item.quantity, 0) >
-                0 && (
-                <span className={s.cart_count}>
-                  {basketItems.reduce((sum, item) => sum + item.quantity, 0)}
-                </span>
-              )}
+              <LuHeart className={s.icon_heart} size={22} strokeWidth={1.75} />
             </Link>
             <button
+              type="button"
               className={s.basket_button}
-              onClick={openBasket}
-              aria-label="Корзина"
+              onClick={handleOpenBasket}
+              aria-label="Открыть корзину"
             >
-              <FaShoppingCart size={20} />
-              {basketItems.length > 0 && (
-                <span className={s.cart_count}>
-                  {basketItems.reduce((sum, item) => sum + item.quantity, 0)}
-                </span>
+              <LuShoppingBag className={s.icon_cart} size={22} strokeWidth={1.75} />
+              {totalItems > 0 && (
+                <span className={s.cart_count}>{totalItems}</span>
               )}
             </button>
           </div>
         </div>
       </div>
       <div className={`${s.mobile_menu} ${isMenuOpen ? s.open : ""}`}>
-
-
-
-
-
         <ul className={s.mobile_nav_list}>
           <li className={s.mobile_nav_item}>
             <Link to="/" className={s.mobile_nav_link} onClick={closeMenu}>
@@ -188,20 +152,19 @@ const Header = () => {
         </ul>
         <div className={s.mobile_contacts}>
           <div className={s.mobile_phone}>
-            <FaPhone size={18} />
+            <LuPhone className={s.header_icon} size={18} strokeWidth={1.75} />
             <a href="tel:+79665588499" onClick={closeMenu}>
               +7 (966) 55 88 499
             </a>
           </div>
-        
         </div>
       </div>
       <Basket
         isOpen={isBasketOpen}
-        onClose={() => setIsBasketOpen(false)}
+        onClose={closeBasket}
         items={basketItems}
         onUpdateQuantity={updateQuantity}
-        onRemoveItem={removeItem}
+        onRemoveItem={removeFromCart}
       />
     </header>
   );

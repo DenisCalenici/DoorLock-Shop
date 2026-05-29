@@ -1,14 +1,28 @@
 import { useCart } from "../context/CartContext";
-import type { IProductCard } from "../components/catalog/product/ProductCard.type";
-import React from "react";
-export const useCartActions = () => {
-  const { addToCart } = useCart();
+import type { IProductCard } from "../hooks/useProductFilter";
 
-  const handleAddToBasket = (e: React.MouseEvent, product: IProductCard) => {
-    e.stopPropagation();
-    e.preventDefault();
+export const useCartActions = () => {
+  const { addToCart, openBasket } = useCart();
+
+  const addProductToCart = (
+    product: IProductCard,
+    options?: { openBasket?: boolean },
+  ) => {
     addToCart(product);
+    if (options?.openBasket !== false) {
+      openBasket();
+    }
   };
 
-  return { handleAddToBasket };
+  const handleAddToBasket = (
+    e: React.MouseEvent,
+    product: IProductCard,
+    options?: { openBasket?: boolean },
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addProductToCart(product, options);
+  };
+
+  return { handleAddToBasket, addProductToCart, addToCart, openBasket };
 };

@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Layout from "../Layout/Layout";
 import FilterProduct from "./filters/Filter";
 import ProductList from "./product/ProductList";
-import Basket from "../Basket/Basket";
 import s from "./Catalog.module.css";
 import Ceo from "../common/ceo/Ceo";
-import PopularProduct from "../common/popularProduct/PopularProduct";
 import {
   useProductFilter,
   type IProductCard,
 } from "../../hooks/useProductFilter";
-
-interface BasketItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
+import { useProducts } from "../../context/ProductsContext";
+import { useCart } from "../../context/CartContext";
+import { AsyncStateGate } from "../common/asyncState";
+import { LuSearch } from "react-icons/lu";
+import iconStyles from "../common/icons/ActionIcons.module.css";
 
 interface CatalogProps {
   title?: string;
@@ -30,85 +26,16 @@ const Catalog: React.FC<CatalogProps> = ({
   title = "Накладные электронные замки",
   onProductClick,
 }) => {
-  const [products, setProducts] = useState<IProductCard[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const { products, isLoading, error } = useProducts();
+  const { addToCart, openBasket } = useCart();
+
+  const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 4;
 
-  const [isBasketOpen, setIsBasketOpen] = useState(false);
-  const [basketItems, setBasketItems] = useState<BasketItem[]>([]);
-
-  const openBasket = () => setIsBasketOpen(true);
-  const closeBasket = () => setIsBasketOpen(false);
-
   const addToBasket = (product: IProductCard) => {
-    setBasketItems((prevItems: BasketItem[]) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
-
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        );
-      } else {
-        const newItem: BasketItem = {
-          id: product.id,
-          name: product.title,
-          price: product.price,
-          quantity: 1,
-          image: product.image,
-        };
-        return [...prevItems, newItem];
-      }
-    });
-
-    console.log("✅ Товар добавлен в корзину:", product.title);
-    
-    // Автоматически открываем корзину при добавлении товара
+    addToCart(product);
     openBasket();
   };
-
-  const updateQuantity = (id: number, quantity: number) => {
-    setBasketItems((prevItems: BasketItem[]) =>
-      prevItems.map((item) => (item.id === id ? { ...item, quantity } : item)),
-    );
-  };
-
-  const removeItem = (id: number) => {
-    setBasketItems((prevItems: BasketItem[]) =>
-      prevItems.filter((item) => item.id !== id),
-    );
-  };
-
-  const totalBasketItems = basketItems.reduce(
-    (sum, item) => sum + item.quantity,
-    0,
-  );
-
-  useEffect(() => {
-    console.log("🔄 Catalog: Запрос данных...");
-    setIsLoading(true);
-
-    fetch("https://fakestoreapi.com/products")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Ошибка при загрузке данных: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data: IProductCard[]) => {
-        console.log(`✅ Catalog: Получено ${data.length} продуктов`);
-        setProducts(data);
-        setIsLoading(false);
-      })
-      .catch((err: any) => {
-        console.error("❌ Catalog: Ошибка загрузки:", err);
-        setError(err.message);
-        setIsLoading(false);
-      });
-  }, []);
 
   const {
     filters,
@@ -123,8 +50,16 @@ const Catalog: React.FC<CatalogProps> = ({
     hasActiveFilters,
   } = useProductFilter(products);
 
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [searchParams] = useSearchParams();
+  const categoryFromUrl = searchParams.get("category");
 
+  useEffect(() => {
+    if (categoryFromUrl) {
+      updateCategory(categoryFromUrl);
+    }
+  }, [categoryFromUrl, updateCategory]);
+
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
@@ -149,62 +84,25 @@ const Catalog: React.FC<CatalogProps> = ({
     setCurrentPage(1);
   }, [filteredProducts.length]);
 
-  if (isLoading) {
-    return (
-      <Layout>
-        <div className={s.loading_container}>
-          <div className={s.loading_spinner}></div>
-          <p>Загрузка каталога...</p>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (error) {
-    return (
-      <Layout>
-        <div className={s.empty_container}>
-          <h2>Ошибка загрузки</h2>
-          <p>{error}</p>
-          <button onClick={() => window.location.reload()} className={s.button}>
-            Попробовать снова
-          </button>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (!products || products.length === 0) {
-    return (
-      <Layout>
-        <div className={s.empty_container}>
-          <h2>Каталог пуст</h2>
-          <p>Товары временно отсутствуют</p>
-        </div>
-      </Layout>
-    );
-  }
-
   return (
-    <Layout>
+    <Layout title="Каталог">
+      <AsyncStateGate
+        isLoading={isLoading}
+        error={error}
+        loadingMessage="Загрузка каталога..."
+        fullHeight
+        isEmpty={!products.length}
+        empty={{
+          title: "Каталог пуст",
+          message: "Товары временно отсутствуют",
+        }}
+      >
       <section>
         <div className={s.catalog_container}>
           <div className={s.catalog_header}>
             <h1 className={s.h1}>
               {title} ({filteredProducts.length})
             </h1>
-            
-            {/* Кнопка корзины в шапке */}
-            <button 
-              className={s.basket_icon_button}
-              onClick={openBasket}
-              aria-label="Открыть корзину"
-            >
-              🛒
-              {totalBasketItems > 0 && (
-                <span className={s.basket_count}>{totalBasketItems}</span>
-              )}
-            </button>
           </div>
 
           <div className={s.catalog_controls}>
@@ -277,7 +175,13 @@ const Catalog: React.FC<CatalogProps> = ({
 
               {currentProducts.length === 0 ? (
                 <div className={s.no_results} role="alert">
-                  <div className={s.no_results_icon}>🔍</div>
+                  <div className={s.no_results_icon}>
+                    <LuSearch
+                      size={48}
+                      strokeWidth={1.5}
+                      className={iconStyles.search_icon}
+                    />
+                  </div>
                   <h3 className={s.no_results_title}>Товары не найдены</h3>
                   <p className={s.no_results_text}>
                     Попробуйте изменить параметры фильтров или сбросить их
@@ -345,16 +249,8 @@ const Catalog: React.FC<CatalogProps> = ({
         </div>
       </section>
 
-      <PopularProduct />
-      <Ceo />
-
-      <Basket
-        isOpen={isBasketOpen}
-        onClose={closeBasket}
-        items={basketItems}
-        onUpdateQuantity={updateQuantity}
-        onRemoveItem={removeItem}
-      />
+        <Ceo />
+      </AsyncStateGate>
     </Layout>
   );
 };

@@ -1,0 +1,24 @@
+.about {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+  line-height: 1.6;
+}
+
+.about h1 {
+  margin-bottom: 1rem;
+}
+
+.about_list {
+  margin: 1.25rem 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.about_list li {
+  margin-bottom: 0.5rem;
+}
+
+.about_contact a {
+  color: var(--color-primary, #4295e4);
+}

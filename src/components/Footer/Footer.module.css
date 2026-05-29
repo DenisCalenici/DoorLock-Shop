@@ -186,15 +186,13 @@
   }
 }
 
-/* ========== ПЕРЕСТРОЙКА В 2 КОЛОНКИ НА 768px ========== */
+
 @media (max-width: 768px) {
   .footer_container {
     flex-direction: column;
     padding: 40px 20px;
     min-height: auto;
   }
-
-  /* Логотип сверху */
   .footer_logo {
     width: 80%;
     height: auto;
