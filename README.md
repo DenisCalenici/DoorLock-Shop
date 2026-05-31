@@ -1,33 +1,39 @@
 # React Shop — интернет-магазин замков
 
-Учебный проект на **React 18**, **TypeScript**, **Vite** и **React Router 7**.  
-Данные товаров: [Fake Store API](https://fakestoreapi.com) (цены в USD).
+Учебно-коммерческий проект. Интернет-магазин дверных замков с каталогом, корзиной, избранным и адаптивной вёрсткой.
 
-## Запуск
+**Автор:** Денис Каленич  
+**GitHub:** [github.com/DenisCalenici](https://github.com/DenisCalenici)
+
+---
+
+## 🛠 Стек
+
+- React 18
+- TypeScript
+- Vite
+- React Router 7
+- Context API (корзина, избранное, товары)
+- Fake Store API (данные товаров)
+
+---
+
+## 📦 Функционал
+
+- Каталог товаров с фильтрацией по категориям
+- Карточка товара
+- Корзина с модальным окном
+- Избранное (сохраняется в localStorage)
+- Маршрутизация (главная, каталог, карточка, корзина, оформление заказа, избранное, о нас, опт)
+- Адаптивная вёрстка
+- Форматирование цены (USD)
+
+---
+
+## 🚀 Запуск проекта
 
 ```bash
+git clone https://github.com/DenisCalenici/DoorLock-Shop.git
+cd DoorLock-Shop
 npm install
-npm run dev      # http://localhost:5173
-npm run build    # production-сборка
-npm run preview  # просмотр сборки
-npm run typecheck
-```
-
-## Структура
-
-| Путь | Назначение |
-|------|------------|
-| `src/context/ProductsContext.tsx` | Общий список товаров |
-| `src/context/CartContext.tsx` | Корзина + модалка |
-| `src/context/FavoritesContext.tsx` | Избранное (localStorage) |
-| `src/api/` | HTTP-запросы к API |
-| `src/components/common/asyncState/` | Загрузка / ошибка / пусто |
-| `src/utils/formatPrice.ts` | Формат цены USD |
-
-## Маршруты
-
-- `/` — главная
-- `/catalog` — каталог (фильтр: `?category=electronics`)
-- `/product/:id` — карточка товара
-- `/cart`, `/checkout`, `/checkout/:id` — корзина и заказ
-- `/favorites`, `/about`, `/wholesale` — доп. страницы
+npm run dev
